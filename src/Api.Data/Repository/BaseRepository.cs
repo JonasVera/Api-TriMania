@@ -20,7 +20,7 @@ namespace Api.Data.Repository
         public async Task<bool> DeleteAsync(Guid id)
         {
             try{
-            var result = await _dataset.SingleOrDefaultAsync(u => u.Id.Equals(id));
+                var result = await _dataset.SingleOrDefaultAsync(u => u.Id.Equals(id));
              if (result == null)
                  return false;
                 _dataset.Remove(result);
@@ -31,9 +31,9 @@ namespace Api.Data.Repository
             }
         }
 
-        public Task<bool> ExistAsync(Guid id)
+        public async Task<bool> ExistAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _dataset.AnyAsync(u => u.Id.Equals(id));
         }
 
         public async Task<T> InsertAsync(T item)
