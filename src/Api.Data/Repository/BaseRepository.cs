@@ -17,9 +17,18 @@ namespace Api.Data.Repository
             _dataset = context.Set<T>();
         }
 
-        public Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try{
+            var result = await _dataset.SingleOrDefaultAsync(u => u.Id.Equals(id));
+             if (result == null)
+                 return false;
+                _dataset.Remove(result);
+                await _context.SaveChangesAsync();
+                return true;
+            }catch (Exception ex){
+                throw ex;
+            }
         }
 
         public Task<bool> ExistAsync(Guid id)
