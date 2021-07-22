@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
 using Api.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Data.Repository
 {
     public class BaseRepository<T> : IRepository<T> where T : BaseEntity
     {
-
+        protected readonly MyContext _context;
+        private DbSet<T> _dataset;
+        
         public BaseRepository(MyContext context){
-            
+            _context = context;
+            _dataset = context.Set<T>();
         }
+
         public Task<bool> DeleteAsync(Guid id)
         {
             throw new NotImplementedException();
@@ -22,9 +27,22 @@ namespace Api.Data.Repository
             throw new NotImplementedException();
         }
 
-        public Task<T> InsertAsync(T item)
+        public async Task<T> InsertAsync(T item)
         {
-            throw new NotImplementedException();
+            try{
+                if (item.Id == Guid.Empty) {
+                    item.Id = Guid.NewGuid();
+                }
+                item.CreateAt = DateTime.Now;
+                _dataset.Add(item);
+
+                await _context.SaveChangesAsync();
+
+            }catch (Exception ex){
+                throw ex;
+            }
+
+            return item;
         }
 
         public Task<T> SelectAsync(Guid id)
